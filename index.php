@@ -16,7 +16,9 @@
 
 require_once "models/enlaces.php";
 require_once "models/crudProductos.php";
+
 require_once "controllers/productsController.php";
+
 //Para poder ver el template se hace la petición mediante un controlador.
 
 //creamos el objeto:

@@ -17,6 +17,46 @@
 			//$statement->close();
 		}
 
+        public static function existencia($total){
+            $statement = Conexion::conectar()->prepare("UPDATE productos SET stock = stock - ? WHERE id = ?;");
+            foreach ($_SESSION["carrito"] as $producto) {
+                $total += $producto->total;
+                $statement->execute([$producto->id, $idVenta, $producto->cantidad]);
+                $sentenciaExistencia->execute([$producto->cantidad, $producto->id]);
+            }
+            if ($statement->execute([$ahora, $total])){
+                return true;
+            }else{
+                return false;
+            }
+        }
+        public static function productosVendidos($total, $idVenta){
+
+            $statement = Conexion::conectar()->prepare("INSERT INTO productos_vendidos(id_producto, id_venta, cantidad) VALUES (?, ?, ?);");
+            foreach ($_SESSION["carrito"] as $producto) {
+                $total += $producto->total;
+                $statement->execute([$producto->id, $idVenta, $producto->cantidad]);
+                self::existencia([$producto->cantidad, $producto->id]);
+            }
+            return;
+        }
+
+        public static function terminarVenta($tabla, $total){
+            $ahora = date("Y-m-d H:i:s");
+            $statement = Conexion::conectar()->prepare("INSERT INTO $tabla(fecha, total) VALUES (?, ?);");
+            if ($statement->execute([$ahora, $total])){
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+        public static function getVenta(){
+            $statement = Conexion::conectar()->prepare("SELECT id FROM ventas ORDER BY id DESC LIMIT 1");
+            $statement->execute();
+            return $statement->fetch();
+        }
+
 		public static function getTotalProductos($tabla){
             $statement = Conexion::conectar()->prepare("SELECT SUM(cantidad_stock) AS total FROM $tabla");
             $statement->execute();
@@ -253,6 +293,13 @@
         public static function getProductModel($table, $idP){
             $statement = Conexion::conectar()->prepare("SELECT * FROM $table WHERE id = :id");
             $statement->bindParam(":id", $idP, PDO::PARAM_INT);
+            $statement->execute();
+
+            return $statement->fetch();
+        }
+
+        public static function productoPorCodigo($codigo){
+            $statement = Conexion::conectar()->prepare("SELECT * FROM productos WHERE codigo = ? LIMIT 1;");
             $statement->execute();
 
             return $statement->fetch();

@@ -74,6 +74,15 @@
                     }
                 ?>
                 <li class="nav-item">
+                    <a href="index.php?action=ventas" class="nav-link">
+                        <i class="nav-icon fa fa-barcode"></i>
+                        <p>
+                            Ventas
+                            <i class="right fa fa-angle-left"></i>
+                        </p>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="index.php?action=inventario" class="nav-link">
                         <i class="nav-icon fa fa-cube"></i>
                         <p>

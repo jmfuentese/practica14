@@ -7,7 +7,9 @@ class Pages{
 
 		if($link == "ingresar" || $link == "inventario" || $link == "editar" || $link == "salir" || $link == "dashboard"
             || $link == "usuarios" || $link == "categorias" || $link == "agregarStock" || $link == "borrarProducto"
-            || $link == "borrarCategoria" || $link == "borrarUsuario" || $link == "borrarTienda" || $link == "tiendas"){
+            || $link == "borrarCategoria" || $link == "borrarUsuario" || $link == "borrarTienda" || $link == "tiendas"
+            || $link == "vender" || $link == "ventas" || $link == "agregarAlCarrito" || $link == "quitarDelCarrito"
+            || $link == "terminarVenta"){
 
 			$module =  "views/modules/".$link.".php";
 		
