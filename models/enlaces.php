@@ -7,7 +7,7 @@ class Pages{
 
 		if($link == "ingresar" || $link == "inventario" || $link == "editar" || $link == "salir" || $link == "dashboard"
             || $link == "usuarios" || $link == "categorias" || $link == "agregarStock" || $link == "borrarProducto"
-            || $link == "borrarCategoria" || $link == "borrarUsuario" || $link == "tiendas"){
+            || $link == "borrarCategoria" || $link == "borrarUsuario" || $link == "borrarTienda" || $link == "tiendas"){
 
 			$module =  "views/modules/".$link.".php";
 		

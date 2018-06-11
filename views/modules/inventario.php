@@ -32,6 +32,7 @@
                             <th>Precio</th>
                             <th>Stock</th>
                             <th>Categoria</th>
+                            <th>Tienda</th>
                             <th>Acciones</th>
                         </tr>
                         </thead>
@@ -85,8 +86,17 @@
                                 <label>Categoria</label>
                                 <select name="categoria" class="form-control select2" style="width: 100%;">
                                     <?php
-                                    $categorias = new ProductsController();
-                                    $categorias -> getSelectCategoryListController();
+                                    $vistaProductos -> getSelectCategoryListController();
+                                    ?>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <div class="form-group">
+                                <label>Tienda</label>
+                                <select name="tienda" class="form-control select2" style="width: 100%;">
+                                    <?php
+                                    $vistaProductos -> getSelectStoreListController();
                                     ?>
                                 </select>
                             </div>

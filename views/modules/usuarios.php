@@ -87,8 +87,8 @@ if(!$_SESSION["validar"]){
                             <div class="form-group">
                                 <label>Privilegio</label>
                                 <select name="privilegio" class="form-control select2" style="width: 100%;">
-                                    <option value="User">User</option>
-                                    <option value="Admin">Admin</option>
+                                    <option >User</option>
+                                    <option >Admin</option>
                                 </select>
                             </div>
                         </div>

@@ -79,14 +79,15 @@
 
         public static function registerProductModel($table, $datos){
             $statement = Conexion::conectar()->prepare(
-                "INSERT INTO $table(codigo_producto,nombre,date_added, precio_producto, cantidad_stock, id_categoria) 
-                                VALUES (:codigo, :nombre,:date_add, :precio, :stock, :categoria)");
+                "INSERT INTO $table(codigo_producto,nombre,date_added, precio_producto, cantidad_stock, id_categoria, id_tienda) 
+                                VALUES (:codigo, :nombre,:date_add, :precio, :stock, :categoria, :tienda)");
             $statement->bindParam(":codigo",$datos["codigo"],PDO::PARAM_STR);
             $statement->bindParam(":nombre",$datos["nombre"],PDO::PARAM_STR);
             $statement->bindParam(":date_add",$datos["date"],PDO::PARAM_INT);
             $statement->bindParam(":precio",$datos["precio"],PDO::PARAM_STR);
             $statement->bindParam(":stock",$datos["stock"],PDO::PARAM_STR);
             $statement->bindParam(":categoria",$datos["categoria"],PDO::PARAM_STR);
+            $statement->bindParam(":tienda",$datos["tienda"],PDO::PARAM_STR);
             if($statement->execute()){
                 return true;
             }else{
@@ -107,6 +108,16 @@
         public static function deleteCategoryModel($table, $idC){
             $statement = Conexion::conectar()->prepare("DELETE FROM $table WHERE id_categoria = :id");
             $statement->bindParam(":id",$idC,PDO::PARAM_STR);
+            if($statement->execute()){
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+        public static function deleteStoreModel($table, $idT){
+            $statement = Conexion::conectar()->prepare("DELETE FROM $table WHERE id = :id");
+            $statement->bindParam(":id",$idT,PDO::PARAM_STR);
             if($statement->execute()){
                 return true;
             }else{
@@ -233,7 +244,7 @@
 
         public static function getStoreByNameModel($table, $nombre){
             $stmt = Conexion::conectar()->prepare("SELECT * FROM $table WHERE nombre = :nombre");
-            $stmt->bindParam(":id", $nombre, PDO::PARAM_INT);
+            $stmt->bindParam(":nombre", $nombre, PDO::PARAM_INT);
             $stmt->execute();
 
             return $stmt->fetch();

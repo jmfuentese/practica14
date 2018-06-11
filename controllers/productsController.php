@@ -60,7 +60,7 @@
 
 		public static function registerUserController(){
             if(isset($_POST["user"]) && isset($_POST["password"])){
-                if ($_POST["privilegio"] === "User"){
+                if ($_POST["privilegio"] == "User"){
                     $priv = 0;
                 }else{
                     $priv = 1;
@@ -176,8 +176,9 @@
         public static function registerProductController(){
             if(isset($_POST["nombre"]) && isset($_POST["precio"])){
                 $category = DatosProd::getCategoryByNameModel("categoria", $_POST["categoria"]);
+                $tienda = DatosProd::getStoreByNameModel("tienda", $_POST["tienda"]);
                 $datos = array( "codigo"=>$_POST["codigo"], "nombre"=>$_POST["nombre"], "precio"=>$_POST["precio"], "stock"=>$_POST["stock"],
-                                        "categoria"=>$category["id_categoria"],"date"=>date("Y-m-d h:i:s"));
+                                        "categoria"=>$category["id_categoria"],"date"=>date("Y-m-d h:i:s"), "tienda"=>$tienda["id"]);
                 $respuesta =  new DatosProd();
                 $respuesta->registerProductModel("productos",$datos);
                 //Valiación de la respuesta del modelo para ver si es un usuario correcto.
@@ -268,8 +269,8 @@
 				<td>'.$act.'</td>
 				<td>'.$item["date_added"].'</td>
 				<td>
-				<a href="index.php?action=borrarTienda&id='.$item["id"].'"><button class="btn btn-danger"><i class="right fa fa-trash"></i></button></a>
-				<a href="index.php?action=activar&id='.$item["id"].'"><button class="btn btn-info"><i class="right fa fa-gear"></i></button></a>
+				<a href="index.php?action=borrarTienda&idTienda='.$item["id"].'"><button class="btn btn-danger" ><i class="right fa fa-trash"></i></button>
+				<a href="index.php?action=activar&id='.$item["id"].'"><button class="btn btn-info" ><i class="right fa fa-gear"></i></button></a>
 				</td>
 			</tr>';
 
@@ -314,6 +315,7 @@
 
             foreach($respuesta as $row => $item){
                 $categoria = DatosProd::getCategoryModel("categoria", $item["id_categoria"]);
+                $tienda = DatosProd::getStoreModel("tienda", $item["id_tienda"]);
                 echo'<tr>
 				<td>'.$item["id"].'</td>
 				<td>'.$item["codigo_producto"].'</td>
@@ -322,6 +324,7 @@
 				<td>'.$item["precio_producto"].'</td>
 				<td>'.$item["cantidad_stock"].'</td>
 				<td>'.$categoria["nombre_categoria"].'</td>
+				<td>'.$tienda["nombre"].'</td>
 				<td><a href="index.php?action=agregarStock&idProducto='.$item["id"].'"><button class="btn btn-default"><i class="right fa  fa-edit"></i></button></a>
 				<a href="index.php?action=borrarProducto&idProducto='.$item["id"].'" data-tip="Eliminar"><button class="btn btn-danger"><i class="right fa fa-trash"></i></button></a></td>
 			</tr>';
