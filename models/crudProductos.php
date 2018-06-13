@@ -17,48 +17,11 @@
 			//$statement->close();
 		}
 
-        public static function existencia($total){
-            $statement = Conexion::conectar()->prepare("UPDATE productos SET stock = stock - ? WHERE id = ?;");
-            foreach ($_SESSION["carrito"] as $producto) {
-                $total += $producto->total;
-                $statement->execute([$producto->id, $idVenta, $producto->cantidad]);
-                $sentenciaExistencia->execute([$producto->cantidad, $producto->id]);
-            }
-            if ($statement->execute([$ahora, $total])){
-                return true;
-            }else{
-                return false;
-            }
-        }
-        public static function productosVendidos($total, $idVenta){
 
-            $statement = Conexion::conectar()->prepare("INSERT INTO productos_vendidos(id_producto, id_venta, cantidad) VALUES (?, ?, ?);");
-            foreach ($_SESSION["carrito"] as $producto) {
-                $total += $producto->total;
-                $statement->execute([$producto->id, $idVenta, $producto->cantidad]);
-                self::existencia([$producto->cantidad, $producto->id]);
-            }
-            return;
-        }
-
-        public static function terminarVenta($tabla, $total){
-            $ahora = date("Y-m-d H:i:s");
-            $statement = Conexion::conectar()->prepare("INSERT INTO $tabla(fecha, total) VALUES (?, ?);");
-            if ($statement->execute([$ahora, $total])){
-                return true;
-            }else{
-                return false;
-            }
-        }
-
-        public static function getVenta(){
-            $statement = Conexion::conectar()->prepare("SELECT id FROM ventas ORDER BY id DESC LIMIT 1");
-            $statement->execute();
-            return $statement->fetch();
-        }
 
 		public static function getTotalProductos($tabla){
-            $statement = Conexion::conectar()->prepare("SELECT SUM(cantidad_stock) AS total FROM $tabla");
+            $statement = Conexion::conectar()->prepare("SELECT SUM(cantidad_stock) AS total FROM $tabla WHERE id_tienda = :tienda");
+            $statement->bindParam(":tienda",$_SESSION["tienda"],PDO::PARAM_STR);
             $statement->execute();
             return $statement->fetch();
         }
@@ -117,6 +80,22 @@
             }
         }
 
+        public static function registerSaleModel($table, $datos){
+            $statement = Conexion::conectar()->prepare(
+                "INSERT INTO $table(fecha,productos_vendidos,cantidad, total, id_tienda) 
+                            VALUES (:fecha,:producto,:cantidad, :total, :tienda)");
+            $statement->bindParam(":fecha",$datos["fecha"],PDO::PARAM_STR);
+            $statement->bindParam(":producto",$datos["producto"],PDO::PARAM_STR);
+            $statement->bindParam(":cantidad",$datos["cantidad"],PDO::PARAM_INT);
+            $statement->bindParam(":total",$datos["total"],PDO::PARAM_INT);
+            $statement->bindParam(":tienda",$datos["tienda"],PDO::PARAM_INT);
+            if($statement->execute()){
+                return true;
+            }else{
+                return false;
+            }
+        }
+
         public static function registerProductModel($table, $datos){
             $statement = Conexion::conectar()->prepare(
                 "INSERT INTO $table(codigo_producto,nombre,date_added, precio_producto, cantidad_stock, id_categoria, id_tienda) 
@@ -158,6 +137,16 @@
         public static function deleteStoreModel($table, $idT){
             $statement = Conexion::conectar()->prepare("DELETE FROM $table WHERE id = :id");
             $statement->bindParam(":id",$idT,PDO::PARAM_STR);
+            if($statement->execute()){
+                return true;
+            }else{
+                return false;
+            }
+        }
+
+        public static function deleteSaleModel($table, $idV){
+            $statement = Conexion::conectar()->prepare("DELETE FROM $table WHERE id = :id");
+            $statement->bindParam(":id",$idV,PDO::PARAM_STR);
             if($statement->execute()){
                 return true;
             }else{
@@ -282,6 +271,7 @@
             return $stmt->fetch();
         }
 
+
         public static function getStoreByNameModel($table, $nombre){
             $stmt = Conexion::conectar()->prepare("SELECT * FROM $table WHERE nombre = :nombre");
             $stmt->bindParam(":nombre", $nombre, PDO::PARAM_INT);
@@ -298,12 +288,30 @@
             return $statement->fetch();
         }
 
-        public static function productoPorCodigo($codigo){
-            $statement = Conexion::conectar()->prepare("SELECT * FROM productos WHERE codigo = ? LIMIT 1;");
+        public static function getProductsForSale($table, $idT){
+            $statement = Conexion::conectar()->prepare("SELECT * FROM $table WHERE id_tienda = :id");
+            $statement->bindParam(":id", $idT, PDO::PARAM_INT);
+            $statement->execute();
+
+            return $statement->fetchAll();
+        }
+
+        public static function getProductByCodeModel($table, $code){
+            $statement = Conexion::conectar()->prepare("SELECT * FROM $table WHERE codigo_producto = :code");
+            $statement->bindParam(":code", $code, PDO::PARAM_INT);
             $statement->execute();
 
             return $statement->fetch();
         }
+
+        public static function getProductByNameModel($table, $name){
+            $statement = Conexion::conectar()->prepare("SELECT * FROM $table WHERE nombre = :nom");
+            $statement->bindParam(":nom", $name, PDO::PARAM_INT);
+            $statement->execute();
+
+            return $statement->fetch();
+        }
+
 
         public static function getUserModel($table){
             $statement = Conexion::conectar()->prepare("SELECT * FROM $table");
@@ -348,6 +356,18 @@
                 return "error";
 
             }
+        }
+
+        public static function salesListModel($table, $idTienda){
+            if ($_SESSION["tienda"] == 0){
+                $statement = Conexion::conectar()->prepare("SELECT * FROM $table");
+            }else{
+                $statement = Conexion::conectar()->prepare("SELECT * FROM $table WHERE id_tienda = :id_tienda");
+            }
+            $statement->bindParam(":id_tienda", $idTienda, PDO::PARAM_STR);
+            $statement->execute();
+
+            return $statement->fetchAll();
         }
 	}
 ?>

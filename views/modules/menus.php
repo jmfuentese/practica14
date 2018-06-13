@@ -42,7 +42,7 @@
         <div class="user-panel mt-3 pb-3 mb-3 d-flex">
 
             <div class="info">
-                <a href="#" class="d-block"><?php echo $_SESSION["usuario"]; ?></a>
+                <a href="#" class="d-block">Bienvenido <?php echo $_SESSION["usuario"]; ?></a>
             </div>
         </div>
 

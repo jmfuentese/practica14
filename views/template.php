@@ -28,7 +28,10 @@
     <link rel="stylesheet" href="views/plugins/bootstrap-wysihtml5/bootstrap3-wysihtml5.min.css">
     <!-- Google Font: Source Sans Pro -->
     <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:300,400,400i,700" rel="stylesheet">
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+
+    <script src="views/dist/js/plugins/sweetalert/sweetalert.js"></script>
+    <!--script src="view/dist/js/plugins/sweetalert/sweetalert.min.js"></script-->
+    <link rel="stylesheet" href="views/dist/js/plugins/sweetalert/sweetalert.css">
 
     
 

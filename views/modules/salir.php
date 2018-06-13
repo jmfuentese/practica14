@@ -3,6 +3,7 @@
     $_SESSION["validar"] = false;
     $_SESSION["usuario"] = "";
     $_SESSION["password"] = "";
+    $_SESSION["tienda"] = "";
     //$_SESSION = array();
     //session_destroy();
     //header("Location:../modules/ingresar.php");

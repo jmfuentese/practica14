@@ -9,7 +9,7 @@ class Pages{
             || $link == "usuarios" || $link == "categorias" || $link == "agregarStock" || $link == "borrarProducto"
             || $link == "borrarCategoria" || $link == "borrarUsuario" || $link == "borrarTienda" || $link == "tiendas"
             || $link == "vender" || $link == "ventas" || $link == "agregarAlCarrito" || $link == "quitarDelCarrito"
-            || $link == "terminarVenta"){
+            || $link == "terminarVenta" || $link == "cancelarVenta" || $link == "eliminarVenta"){
 
 			$module =  "views/modules/".$link.".php";
 		
