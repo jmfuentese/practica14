@@ -164,15 +164,26 @@
             }
         }
 
+        public static function historialAdd($tabla, $idP, $nota, $usr, $date, $stock){
+            $stmt = Conexion::conectar()->prepare("INSERT INTO $tabla(id_producto, nota, usuario, fecha, cantidad) VALUES 
+                                                              (:idP, :nota, :usuario, :fecha, :cantidad)");
+            $stmt->bindParam(":idP",$idP,PDO::PARAM_INT);
+            $stmt->bindParam(":nota",$nota,PDO::PARAM_STR);
+            $stmt->bindParam(":usuario",$usr,PDO::PARAM_STR);
+            $stmt->bindParam(":fecha",$date,PDO::PARAM_STR);
+            $stmt->bindParam(":cantidad",$stock,PDO::PARAM_INT);
+            $stmt->execute();
+        }
+
         public static function addStockModel($table, $stock, $idP){
-            $usr = $_SESSION["usuario"];
-            $nota = "El usuario ".$usr. " ha agregado ".$stock;
-            $date = date("Y-m-d h:i:s");
+            //$usr = $_SESSION["usuario"];
+            //$nota = "El usuario ".$usr. " ha agregado ".$stock;
+            //$date = date("Y-m-d h:i:s");
 		    $currentStock = self::getStockModel($idP);
 		    $newStock = (int)$stock + (int)$currentStock["cantidad_stock"];
-            self::historialAdd("historial", $idP, $nota, $usr, $date, $stock);
+            //self::historialAdd("historial", $idP, $nota, $usr, $date, $stock);
 		    $statement = Conexion::conectar()->prepare("UPDATE $table SET cantidad_stock = :newStock WHERE id = :id");
-            $statement->bindParam(":id",$idP,PDO::PARAM_STR);
+            $statement->bindParam(":id",$idP,PDO::PARAM_INT);
             $statement->bindParam(":newStock",$newStock,PDO::PARAM_STR);
             if($statement->execute()){
                 return true;
@@ -181,22 +192,16 @@
             }
         }
 
-        public static function historialAdd($tabla, $idP, $nota, $usr, $date, $stock){
-            $stmt = Conexion::conectar()->prepare("INSERT INTO $tabla(id_producto, nota, usuario, fecha, cantidad) VALUES 
-                                                              (:idP, :nota, :usuario, :fecha, :cantidad");
-            $stmt->bindParam(":idP",$idP,PDO::PARAM_STR);
-            $stmt->bindParam(":nota",$nota,PDO::PARAM_STR);
-            $stmt->bindParam(":usuario",$usr,PDO::PARAM_STR);
-            $stmt->bindParam(":fecha",$date,PDO::PARAM_STR);
-            $stmt->bindParam(":cantidad",$stock,PDO::PARAM_STR);
-            $stmt->execute();
-        }
 
         public static function delStockModel($table, $stock, $idP){
+            //$usr = $_SESSION["usuario"];
+            //$nota = "El usuario ".$usr. " ha eliminado ".$stock;
+            //$date = date("Y-m-d h:i:s");
             $currentStock = self::getStockModel($idP);
             $newStock = (int)$currentStock["cantidad_stock"] - (int)$stock;
+            //self::historialAdd("historial", $idP, $nota, $usr, $date, $stock);
             $statement = Conexion::conectar()->prepare("UPDATE $table SET cantidad_stock = :newStock WHERE id = :id");
-            $statement->bindParam(":id",$idP,PDO::PARAM_STR);
+            $statement->bindParam(":id",$idP,PDO::PARAM_INT);
             $statement->bindParam(":newStock",$newStock,PDO::PARAM_STR);
             if($statement->execute()){
                 return true;
@@ -207,7 +212,7 @@
 
         public static function getStockModel($idP){
             $statement = Conexion::conectar()->prepare("SELECT * FROM productos WHERE id = :id");
-            $statement->bindParam(":id",$idP,PDO::PARAM_STR);
+            $statement->bindParam(":id",$idP,PDO::PARAM_INT);
             $statement->execute();
             #fetch(): Obtiene una fila de un conjunto de resultados asociado al objeto PDOStatement.
             return $statement->fetch();
@@ -256,8 +261,9 @@
             return $statement->fetchAll();
         }
 
-        public static function historyListModel($table){
-            $statement = Conexion::conectar()->prepare("SELECT * FROM $table");
+        public static function historyListModel($table, $idP){
+            $statement = Conexion::conectar()->prepare("SELECT * FROM $table WHERE id_producto = :idP");
+            $statement->bindParam(":idP", $idP, PDO::PARAM_INT);
             $statement->execute();
 
             return $statement->fetchAll();
@@ -306,7 +312,7 @@
 
         public static function getProductByNameModel($table, $name){
             $statement = Conexion::conectar()->prepare("SELECT * FROM $table WHERE nombre = :nom");
-            $statement->bindParam(":nom", $name, PDO::PARAM_INT);
+            $statement->bindParam(":nom", $name, PDO::PARAM_STR);
             $statement->execute();
 
             return $statement->fetch();
@@ -315,6 +321,22 @@
 
         public static function getUserModel($table){
             $statement = Conexion::conectar()->prepare("SELECT * FROM $table");
+            $statement->execute();
+
+            return $statement->fetch();
+        }
+
+        public static function getUserByNameModel($table, $name){
+            $statement = Conexion::conectar()->prepare("SELECT * FROM $table WHERE first_name = :nombre");
+            $statement->bindParam(":nombre", $name, PDO::PARAM_STR);
+            $statement->execute();
+
+            return $statement->fetch();
+        }
+
+        public static function getUserByIdModel($table, $usr){
+            $statement = Conexion::conectar()->prepare("SELECT * FROM $table WHERE id = :id");
+            $statement->bindParam(":id", $usr, PDO::PARAM_STR);
             $statement->execute();
 
             return $statement->fetch();
@@ -330,31 +352,29 @@
 
         public static function getCategoryByNameModel($table, $nombre){
             $stmt = Conexion::conectar()->prepare("SELECT * FROM $table WHERE nombre_categoria = :nombre");
-            $stmt->bindParam(":nombre", $nombre, PDO::PARAM_INT);
+            $stmt->bindParam(":nombre", $nombre, PDO::PARAM_STR);
             $stmt->execute();
 
             return $stmt->fetch();
         }
 
-        public static function updateUserModel($table, $datos){
-            $stmt = Conexion::conectar()->prepare("UPDATE $table SET nombre = :nombre, apellido = :apellido, usuario = :usuario, 
-                                                  email = :email WHERE id = :id");
+        public static function updateUserModel($table, $datos, $usr){
+            $stmt = Conexion::conectar()->prepare("UPDATE $table SET first_name = :nombre, last_name = :apellido, usuario = :usuario, 
+                                                  user_email = :email, privilegio = :privilegio, id_tienda = :tienda WHERE id = :id");
 
+            $stmt->bindParam(":nombre", $datos["nombre"], PDO::PARAM_STR);
+            $stmt->bindParam(":apellido", $datos["apellido"], PDO::PARAM_STR);
             $stmt->bindParam(":usuario", $datos["usuario"], PDO::PARAM_STR);
-            $stmt->bindParam(":password", $datos["password"], PDO::PARAM_STR);
             $stmt->bindParam(":email", $datos["email"], PDO::PARAM_STR);
-            $stmt->bindParam(":id", $datos["id"], PDO::PARAM_INT);
+            $stmt->bindParam(":privilegio", $datos["privilegio"], PDO::PARAM_INT);
+            $stmt->bindParam(":tienda", $datos["tienda"], PDO::PARAM_STR);
+            $stmt->bindParam(":id", $usr, PDO::PARAM_INT);
 
             if($stmt->execute()){
-
-                return "success";
-
+                return true;
             }
-
             else{
-
-                return "error";
-
+                return false;
             }
         }
 
@@ -364,7 +384,7 @@
             }else{
                 $statement = Conexion::conectar()->prepare("SELECT * FROM $table WHERE id_tienda = :id_tienda");
             }
-            $statement->bindParam(":id_tienda", $idTienda, PDO::PARAM_STR);
+            $statement->bindParam(":id_tienda", $idTienda, PDO::PARAM_INT);
             $statement->execute();
 
             return $statement->fetchAll();

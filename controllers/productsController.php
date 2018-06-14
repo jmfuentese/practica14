@@ -19,23 +19,6 @@
 			include $resp;
 		}
 
-
-		public static function productRegistrationController(){
-			if(isset($_POST["registro"])){
-				$data = array("nombre" => $_POST["nombre"],"descripcion"=>$_POST["descripcion"],"precio_compra"=>$_POST["precio_compra"], "precio_venta"=>$_POST["precio_venta"],"precio"=>$_POST["precio"]);
-				$resp = DatosProd::productRegistrationModel("productos",$data);
-
-				if($resp == "1"){
-					//header("location: index.php?action=ok");
-                    echo "<script>window.location.href = 'index.php?action=ok'</script>";
-				}else{
-					//header("location: index.php");
-                    echo "<script>window.location.href = 'index.php'</script>";
-				}
-			}
-
-		}
-
 		public static function loginController(){
             if(isset($_POST["usuario"])){
                 $datos = array( "usuario"=>$_POST["usuario"], "password"=>md5($_POST["password"]));
@@ -60,11 +43,11 @@
                               title: 'Error! Verifica tus credenciales.',
                               showConfirmButton: false,
                               timer:2000
-                            }).then((result) => {
-                              if (result.dismiss === swal.DismissReason.timer) {
+                            },
+                            function () {
                                 window.location.href = 'index.php?action=fallo';
-                              }
-                            });
+                                tr.hide();
+                             });
                         </script>";
                 }
 
@@ -95,11 +78,11 @@
                               title: 'Usuario registrado exitosamente!',
                               showConfirmButton: false,
                               timer:2500
-                            }).then((result) => {
-                              if (result.dismiss === swal.DismissReason.timer) {
+                            },
+                            function () {
                                 window.location.href = 'index.php?action=usuarios';
-                              }
-                            });
+                                tr.hide();
+                             });
                           </script>";
                 }else{
                     //header("location:index.php?action=fallo");
@@ -110,11 +93,58 @@
                               title: 'Hubo un error al registrar el usuario!',
                               showConfirmButton: false,
                               timer:2500
-                            }).then((result) => {
-                              if (result.dismiss === swal.DismissReason.timer) {
+                            },
+                            function () {
                                 window.location.href = 'index.php?action=usuarios';
-                              }
-                            });
+                                tr.hide();
+                             });
+                        </script>";
+                }
+
+            }
+        }
+
+        public static function updateUserController($usr){
+            if(isset($_POST["user"])){
+                if ($_POST["privilegio"] == "User"){
+                    $priv = 0;
+                }else{
+                    $priv = 1;
+                }
+                $tienda = DatosProd::getStoreByNameModel("tienda", $_POST["tienda"]);
+                $datos = array( "nombre"=>$_POST["nombre"], "apellido"=>$_POST["apellido"],
+                    "usuario"=>$_POST["user"], "email"=>$_POST["email"], "privilegio"=>$priv, "tienda"=>$tienda["id"]);
+                $respuesta =  new DatosProd();
+                $r = $respuesta->updateUserModel("users",$datos, $usr);
+                //Valiación de la respuesta del modelo para ver si es un usuario correcto.
+                if($r){
+
+                    echo "<script>
+                            swal({
+                              type:'success',
+                              title: 'Usuario actualizado exitosamente!',
+                              showConfirmButton: false,
+                              timer:2500
+                            },
+                            function () {
+                                window.location.href = 'index.php?action=usuarios';
+                                tr.hide();
+                             }
+                            );
+                          </script>";
+                }else{
+
+                    echo "<script>
+                            swal({
+                              type:'error',
+                              title: 'Hubo un error al actualizar el usuario!',
+                              showConfirmButton: false,
+                              timer:2500
+                            },
+                            function () {
+                                window.location.href = 'index.php?action=usuarios';
+                                tr.hide();
+                             });
                         </script>";
                 }
 
@@ -142,11 +172,11 @@
                                       title: 'Venta registrada exitosamente!',
                                       showConfirmButton: false,
                                       timer:2500
-                                    }).then((result) => {
-                                      if (result.dismiss === swal.DismissReason.timer) {
+                                    },
+                                    function () {
                                         window.location.href = 'index.php?action=ventas';
-                                      }
-                                    });
+                                        tr.hide();
+                                     });
                                 </script>";
                         //echo "<script>window.location.href = 'index.php?action=ventas'</script>";
                     }else{
@@ -156,27 +186,27 @@
                                       title: 'Hubo un error al registrar la venta!',
                                       showConfirmButton: false,
                                       timer:2500
-                                    }).then((result) => {
-                                      if (result.dismiss === swal.DismissReason.timer) {
+                                    },
+                                    function () {
                                         window.location.href = 'index.php?action=ventas';
-                                      }
-                                    });
+                                        tr.hide();
+                                     });
                                 </script>";
 
                     }
                 }else{
                     echo "<script>
-                                    swal({
-                                      type:'error',
-                                      title: 'Stock insuficiente! No se completó la venta.',
-                                      showConfirmButton: false,
-                                      timer:2500
-                                    }).then((result) => {
-                                      if (result.dismiss === swal.DismissReason.timer) {
-                                        window.location.href = 'index.php?action=ventas';
-                                      }
-                                    });
-                                </script>";
+                            swal({
+                              type:'error',
+                              title: 'Stock insuficiente! No se completó la venta.',
+                              showConfirmButton: false,
+                              timer:2500
+                            },
+                            function () {
+                                window.location.href = 'index.php?action=ventas';
+                                tr.hide();
+                             });
+                        </script>";
 
                 }
             }
@@ -201,14 +231,15 @@
 				<td>'.$item["date_added"].'</td>
 				<td>'.$priv.'</td>
 				<td>'.$tienda["nombre"].'</td>
-				<td><a href="#"><button class="btn btn-default" data-toggle="modal" data-target="#modal-edit">
-				                                                            <i class="right fa  fa-edit"></i></button></a>
+				<td><a href="index.php?action=editarUsuario&usr='.$item["id"].'"><button class="btn btn-default" ><i class="right fa  fa-edit"></i></button></a>
 				
 				<a href="index.php?action=borrarUsuario&idUsuario='.$item["id"].'"><button class="btn btn-danger"><i class="right fa fa-trash"></i></button></a></td>
 			</tr>';
 
             }
         }
+
+
 
         public static function getUserController(){
             echo "<form method='post' role='form'>
@@ -238,6 +269,18 @@
                   </form>";
         }
 
+        public static function getUserByNameController($usr){
+		    $usrData = DatosProd::getUserByNameModel("users", $usr);
+
+		    return $usrData;
+        }
+
+        public static function getUserByIdController($usr){
+            $usrData = DatosProd::getUserByIdModel("users", $usr);
+
+            return $usrData;
+        }
+
         public static function registerCategoryController(){
             if(isset($_POST["nombre"]) && isset($_POST["descripcion"])){
                 $datos = array( "nombre"=>$_POST["nombre"], "descripcion"=>$_POST["descripcion"], "date"=>date("Y-m-d h:i:s"));
@@ -253,26 +296,26 @@
                               title: 'Categoria registrada exitosamente!',
                               showConfirmButton: false,
                               timer:1500
-                            }).then((result) => {
-                              if (result.dismiss === swal.DismissReason.timer) {
+                            },
+                            function () {
                                 window.location.href = 'index.php?action=categorias';
-                              }
-                            });
+                                tr.hide();
+                             });
                         </script>";
                 }else{
                     //echo "<script>alert('Hubo un error al registrar la categoria');</script>";
                     echo "<script>
-                                    swal({
-                                      type:'error',
-                                      title: 'Hubo un error al registrar la categoria!',
-                                      showConfirmButton: false,
-                                      timer:2500
-                                    }).then((result) => {
-                                      if (result.dismiss === swal.DismissReason.timer) {
-                                        window.location.href = 'index.php?action=categorias';
-                                      }
-                                    });
-                                </script>";
+                            swal({
+                              type:'error',
+                              title: 'Hubo un error al registrar la categoria!',
+                              showConfirmButton: false,
+                              timer:2500
+                            },
+                            function () {
+                                window.location.href = 'index.php?action=categorias';
+                                tr.hide();
+                             });
+                        </script>";
                 }
 
             }
@@ -288,17 +331,17 @@
                     //echo "<script>alert('Tienda registrada exitosamente');</script>";
                     //echo "<script>window.location.href = 'index.php?action=tiendas'</script>";
                     echo "<script>
-                                    swal({
-                                      type:'success',
-                                      title: 'Tienda registrada exitosamente!',
-                                      showConfirmButton: false,
-                                      timer:2500
-                                    }).then((result) => {
-                                      if (result.dismiss === swal.DismissReason.timer) {
-                                        window.location.href = 'index.php?action=tiendas';
-                                      }
-                                    });
-                                </script>";
+                            swal({
+                              type:'success',
+                              title: 'Tienda registrada exitosamente!',
+                              showConfirmButton: false,
+                              timer:2500
+                            },
+                            function () {
+                                window.location.href = 'index.php?action=tiendas';
+                                tr.hide();
+                             });
+                        </script>";
                 }else{
                     //echo "<script>alert('Hubo un error al registrar la tienda');</script>";
                     echo "<script>
@@ -307,11 +350,11 @@
                               title: 'Hubo un error al registrar la tienda!',
                               showConfirmButton: false,
                               timer:2500
-                            }).then((result) => {
-                              if (result.dismiss === swal.DismissReason.timer) {
+                            },
+                            function () {
                                 window.location.href = 'index.php?action=tiendas';
-                              }
-                            });
+                                tr.hide();
+                             });
                         </script>";
                 }
 
@@ -332,17 +375,17 @@
                     //echo "<script>alert('Producto registrado exitosamente');</script>";
                     //echo "<script>window.location.href = 'index.php?action=inventario'</script>";
                     echo "<script>
-                                    swal({
-                                      type:'success',
-                                      title: 'Producto registrado exitosamente!',
-                                      showConfirmButton: false,
-                                      timer:2500
-                                    }).then((result) => {
-                                      if (result.dismiss === swal.DismissReason.timer) {
-                                        window.location.href = 'index.php?action=inventario';
-                                      }
-                                    });
-                                </script>";
+                            swal({
+                              type:'success',
+                              title: 'Producto registrado exitosamente!',
+                              showConfirmButton: false,
+                              timer:2500
+                            },
+                            function () {
+                                window.location.href = 'index.php?action=inventario';
+                                tr.hide();
+                             });
+                        </script>";
 
                 }else{
                     //header("location:index.php?action=fallo");
@@ -354,11 +397,11 @@
                               title: 'Hubo un error al registrar el producto!',
                               showConfirmButton: false,
                               timer:2500
-                            }).then((result) => {
-                              if (result.dismiss === swal.DismissReason.timer) {
+                            },
+                            function () {
                                 window.location.href = 'index.php?action=inventario';
-                              }
-                            });
+                                tr.hide();
+                             });
                         </script>";
                     
                 }
@@ -376,37 +419,35 @@
                 $respuesta = $addStock->addStockModel("productos",$stock, $idP);
                 //Valiación de la respuesta del modelo para ver si es un usuario correcto.
                 if($respuesta){
-                    //session_start();
-                    //$addStock->historialAdd("historial",$idP, $nota, $usr, $date, $stock);
-                    //echo "<script>alert('Stock actualizado exitosamente');</script>";
-                    //echo "<script>window.location.href = 'index.php?action=inventario'</script>";
+                    $usr = $_SESSION["usuario"];
+                    $nota = "El usuario ".(string)$usr." ha agregado ".(string)$stock;
+                    $date = date("Y-m-d h:i:s");
+                    $addStock->historialAdd("historial", $idP, $nota, $usr, $date, $stock);
                     echo "<script>
-                                swal({
-                                  type:'success',
-                                  title: 'Stock actualizado correctamente!',
-                                  showConfirmButton: false,
-                                  timer:2500
-                                }).then((result) => {
-                                  if (result.dismiss === swal.DismissReason.timer) {
-                                    window.location.href = 'index.php?action=inventario';
-                                  }
-                                });
-                            </script>";
+                            swal({
+                              type:'success',
+                              title: 'Stock actualizado correctamente!',
+                              showConfirmButton: false,
+                              timer:2500
+                            },
+                            function () {
+                                window.location.href = 'index.php?action=inventario';
+                                tr.hide();
+                             });
+                        </script>";
                 }else{
-                    //header("location:index.php?action=fallo");
-                    //echo "<script>alert('Hubo un error al actualizar el stock');</script>";
-                    //echo "<script>window.location.href = 'index.php?action=fallo'</script>";
+
                     echo "<script>
                             swal({
                               type:'error',
                               title: 'Hubo un error al actualizar el stock!',
                               showConfirmButton: false,
                               timer:2500
-                            }).then((result) => {
-                              if (result.dismiss === swal.DismissReason.timer) {
+                            },
+                            function () {
                                 window.location.href = 'index.php?action=inventario';
-                              }
-                            });
+                                tr.hide();
+                             });
                         </script>";
                 }
 
@@ -417,25 +458,26 @@
             if(isset($_POST["delStock"])){
                 $stock = $_POST["delStock"];
                 $idP = $_POST["idP"];
-                $respuesta =  new DatosProd();
-                $respuesta->delStockModel("productos",$stock, $idP);
+                $stockMod =  new DatosProd();
+                $respuesta = $stockMod->delStockModel("productos",$stock, $idP);
                 //Valiación de la respuesta del modelo para ver si es un usuario correcto.
                 if($respuesta){
-                    //session_start();
-                    //echo "<script>alert('Stock actualizado exitosamente');</script>";
-                    //echo "<script>window.location.href = 'index.php?action=inventario'</script>";
+                    $usr = $_SESSION["usuario"];
+                    $nota = "El usuario ".(string)$usr. " ha eliminado ".(string)$stock;
+                    $date = date("Y-m-d h:i:s");
+                    $stockMod->historialAdd("historial", $idP, $nota, $usr, $date, $stock);
                     echo "<script>
-                                swal({
-                                  type:'success',
-                                  title: 'Stock actualizado correctamente!',
-                                  showConfirmButton: false,
-                                  timer:2500
-                                }).then((result) => {
-                                  if (result.dismiss === swal.DismissReason.timer) {
-                                    window.location.href = 'index.php?action=inventario';
-                                  }
-                                });
-                            </script>";
+                            swal({
+                              type:'success',
+                              title: 'Stock actualizado correctamente!',
+                              showConfirmButton: false,
+                              timer:2500
+                            },
+                            function () {
+                                window.location.href = 'index.php?action=inventario';
+                                tr.hide();
+                             });
+                        </script>";
                 }else{
                     //header("location:index.php?action=fallo");
                     //echo "<script>alert('Hubo un error al actualizar el stock');</script>";
@@ -446,11 +488,11 @@
                               title: 'Hubo un error al actualizar el stock!',
                               showConfirmButton: false,
                               timer:2500
-                            }).then((result) => {
-                              if (result.dismiss === swal.DismissReason.timer) {
+                            },
+                            function () {
                                 window.location.href = 'index.php?action=inventario';
-                              }
-                            });
+                                tr.hide();
+                             });
                         </script>";
                 }
 
@@ -496,8 +538,8 @@
             }
         }
 
-        public static function historyListController(){
-            $respuesta = DatosProd::historyListModel("categoria");
+        public static function historyListController($idP){
+            $respuesta = DatosProd::historyListModel("historial", $idP);
 
             foreach($respuesta as $row => $item){
                 $product = DatosProd::getProductModel("productos", $item["id_producto"]);
@@ -535,6 +577,12 @@
             foreach($respuesta as $row => $item){
                 echo '<option>'.$item["nombre"].'</option>';
             }
+        }
+
+        public static function getUserStoreListController(){
+            $respuesta = DatosProd::storeListModel("tienda");
+
+            return $respuesta;
         }
 
         public static function productsListController(){

@@ -8,7 +8,7 @@ if(!$_SESSION["validar"]){
 $idP = $_GET["idProducto"];
 
 $producto = DatosProd::getProductModel("productos", $idP);
-
+$vistaStock = new ProductsController();
 ?>
 <div class="content-wrapper">
     <section class="content">
@@ -40,7 +40,6 @@ $producto = DatosProd::getProductModel("productos", $idP);
                             <input name="addStock" type="text" required>
                         </form>
                         <?php
-                        $vistaStock = new ProductsController();
                         $vistaStock -> addStockController();
                         //$vistaUsuario -> borrarUsuarioController();
                         ?>
@@ -81,9 +80,8 @@ $producto = DatosProd::getProductModel("productos", $idP);
                         </thead>
                         <tbody>
                         <?php
-                        $vistaStock = new ProductsController();
-                        $vistaStock -> historyListController();
-                        //$vistaUsuario -> borrarUsuarioController();
+
+                        $vistaStock -> historyListController($idP);
                         ?>
 
                         </tbody>
