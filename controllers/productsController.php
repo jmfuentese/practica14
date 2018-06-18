@@ -35,8 +35,6 @@
                     //header("location:index.php?action=dashboard");
                     echo "<script>window.location.href = 'index.php?action=dashboard'</script>";
                 }else{
-                    //header("location:index.php?action=fallo");
-                    //echo "<script>window.location.href = 'index.php?action=fallo'</script>";
                     echo "<script>
                             swal({
                               type:'error',
@@ -67,11 +65,7 @@
                     "privilegio"=>$priv, "tienda"=>$tienda["id"]);
                 $respuesta =  new DatosProd();
                 $respuesta->registerUserModel("users",$datos);
-                //Valiación de la respuesta del modelo para ver si es un usuario correcto.
                 if($respuesta){
-                    //session_start();
-                    //echo "<script>alert('Usuario registrado exitosamente');</script>";
-                    //echo "<script>window.location.href = 'index.php?action=usuarios'</script>";
                     echo "<script>
                             swal({
                               type:'success',
@@ -85,8 +79,6 @@
                              });
                           </script>";
                 }else{
-                    //header("location:index.php?action=fallo");
-                    //echo "<script>alert('Hubo un error al registrar el usuario');</script>";
                     echo "<script>
                             swal({
                               type:'error',
@@ -116,7 +108,6 @@
                     "usuario"=>$_POST["user"], "email"=>$_POST["email"], "privilegio"=>$priv, "tienda"=>$tienda["id"]);
                 $respuesta =  new DatosProd();
                 $r = $respuesta->updateUserModel("users",$datos, $usr);
-                //Valiación de la respuesta del modelo para ver si es un usuario correcto.
                 if($r){
 
                     echo "<script>
@@ -163,7 +154,6 @@
                         "total"=>$total, "tienda"=>$tienda["id"]);
                     $respuesta =  new DatosProd();
                     $respuesta->registerSaleModel("ventas",$datos);
-                    //Valiación de la respuesta del modelo para ver si es un usuario correcto.
                     if($respuesta){
                         //session_start();
                         echo "<script>
@@ -178,7 +168,6 @@
                                         tr.hide();
                                      });
                                 </script>";
-                        //echo "<script>window.location.href = 'index.php?action=ventas'</script>";
                     }else{
                         echo "<script>
                                     swal({
@@ -286,10 +275,8 @@
                 $datos = array( "nombre"=>$_POST["nombre"], "descripcion"=>$_POST["descripcion"], "date"=>date("Y-m-d h:i:s"));
                 $respuesta =  new DatosProd();
                 $respuesta->registerCategoryModel("categoria",$datos);
-                //Valiación de la respuesta del modelo para ver si es un usuario correcto.
                 if($respuesta){
-                    //echo "<script>alert('Categoria registrada exitosamente');</script>";
-                    //echo "<script>window.location.href = 'index.php?action=categorias'</script>";
+
                     echo "<script>
                             swal({
                               type:'success',
@@ -303,7 +290,6 @@
                              });
                         </script>";
                 }else{
-                    //echo "<script>alert('Hubo un error al registrar la categoria');</script>";
                     echo "<script>
                             swal({
                               type:'error',
@@ -326,10 +312,7 @@
                 $datos = array( "nombre"=>$_POST["nombre"], "date"=>date("Y-m-d h:i:s"));
                 $respuesta =  new DatosProd();
                 $respuesta->registerStoreModel("tienda",$datos);
-                //Valiación de la respuesta del modelo para ver si es un usuario correcto.
                 if($respuesta){
-                    //echo "<script>alert('Tienda registrada exitosamente');</script>";
-                    //echo "<script>window.location.href = 'index.php?action=tiendas'</script>";
                     echo "<script>
                             swal({
                               type:'success',
@@ -343,7 +326,6 @@
                              });
                         </script>";
                 }else{
-                    //echo "<script>alert('Hubo un error al registrar la tienda');</script>";
                     echo "<script>
                             swal({
                               type:'error',
@@ -364,16 +346,14 @@
         public static function registerProductController(){
             if(isset($_POST["nombre"]) && isset($_POST["precio"])){
                 $category = DatosProd::getCategoryByNameModel("categoria", $_POST["categoria"]);
-                $tienda = DatosProd::getStoreByNameModel("tienda", $_POST["tienda"]);
+                //$tienda = DatosProd::getStoreByNameModel("tienda", $_POST["tienda"]);
+                $tienda = $_SESSION["tienda"];
                 $datos = array( "codigo"=>$_POST["codigo"], "nombre"=>$_POST["nombre"], "precio"=>$_POST["precio"], "stock"=>$_POST["stock"],
-                                        "categoria"=>$category["id_categoria"],"date"=>date("Y-m-d h:i:s"), "tienda"=>$tienda["id"]);
+                                        "categoria"=>$category["id_categoria"],"date"=>date("Y-m-d h:i:s"), "tienda"=>$tienda);
                 $respuesta =  new DatosProd();
                 $respuesta->registerProductModel("productos",$datos);
-                //Valiación de la respuesta del modelo para ver si es un usuario correcto.
+
                 if($respuesta){
-                    //session_start();
-                    //echo "<script>alert('Producto registrado exitosamente');</script>";
-                    //echo "<script>window.location.href = 'index.php?action=inventario'</script>";
                     echo "<script>
                             swal({
                               type:'success',
@@ -388,9 +368,6 @@
                         </script>";
 
                 }else{
-                    //header("location:index.php?action=fallo");
-                    //echo "<script>alert('Hubo un error al registrar producto');</script>";
-
                     echo "<script>
                             swal({
                               type:'error',
@@ -403,7 +380,6 @@
                                 tr.hide();
                              });
                         </script>";
-                    
                 }
 
             }
@@ -420,7 +396,7 @@
                 //Valiación de la respuesta del modelo para ver si es un usuario correcto.
                 if($respuesta){
                     $usr = $_SESSION["usuario"];
-                    $nota = "El usuario ".(string)$usr." ha agregado ".(string)$stock;
+                    $nota = "El usuario ".$usr." ha agregado ".(string)$stock;
                     $date = date("Y-m-d h:i:s");
                     $addStock->historialAdd("historial", $idP, $nota, $usr, $date, $stock);
                     echo "<script>
@@ -479,9 +455,7 @@
                              });
                         </script>";
                 }else{
-                    //header("location:index.php?action=fallo");
-                    //echo "<script>alert('Hubo un error al actualizar el stock');</script>";
-                    //echo "<script>window.location.href = 'index.php?action=fallo'</script>";
+
                     echo "<script>
                             swal({
                               type:'error',
@@ -600,7 +574,7 @@
 				<td>'.$item["cantidad_stock"].'</td>
 				<td>'.$categoria["nombre_categoria"].'</td>
 				<td>'.$tienda["nombre"].'</td>
-				<td><a href="index.php?action=agregarStock&idProducto='.$item["id"].'"><button class="btn btn-default"><i class="right fa  fa-edit"></i></button></a>
+				<td><a href="index.php?action=stock-historial&idProducto='.$item["id"].'"><button class="btn btn-default"><i class="right fa  fa-edit"></i></button></a>
 				<a href="index.php?action=borrarProducto&idProducto='.$item["id"].'" data-tip="Eliminar"><button class="btn btn-danger"><i class="right fa fa-trash"></i></button></a></td>
 			</tr>';
 

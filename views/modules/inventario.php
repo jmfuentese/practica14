@@ -22,7 +22,7 @@
                 </div>
                 <!-- /.card-header -->
                 <div class="card-body">
-                    <table id="example1" class="table table-bordered table-striped">
+                    <table id="inventario" class="table table-bordered table-striped">
                         <thead>
                         <tr>
                             <th>ID</th>
@@ -91,16 +91,16 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="form-group">
+                        <!--<div class="form-group">
                             <div class="form-group">
                                 <label>Tienda</label>
                                 <select name="tienda" class="form-control select2" style="width: 100%;">
                                     <?php
-                                    $vistaProductos -> getSelectStoreListController();
+                                    //$vistaProductos -> getSelectStoreListController();
                                     ?>
                                 </select>
                             </div>
-                        </div>
+                        </div>-->
 
                     </div>
                     <div class="modal-footer">
